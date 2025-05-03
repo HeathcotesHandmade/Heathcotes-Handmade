@@ -71,6 +71,191 @@
             display: none;
             cursor: pointer;
         }
+
+        /* Shopping Basket Styles */
+        .basket-icon {
+            position: relative;
+            cursor: pointer;
+            margin-left: 1.5rem;
+        }
+
+        .basket-icon i {
+            font-size: 1.2rem;
+            color: #5a7d7c;
+        }
+
+        .basket-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #d4a373;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .basket-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .basket-overlay.active {
+            right: 0;
+        }
+
+        .basket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-basket {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .basket-items {
+            padding: 1rem;
+        }
+
+        .basket-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .basket-item-img {
+            width: 80px;
+            height: 80px;
+            background-color: #eee;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .basket-item-details {
+            flex: 1;
+        }
+
+        .basket-item-title {
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+        }
+
+        .basket-item-price {
+            color: #5a7d7c;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .basket-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-btn {
+            background-color: #eee;
+            border: none;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .quantity-value {
+            margin: 0 0.5rem;
+        }
+
+        .remove-item {
+            color: #d4a373;
+            cursor: pointer;
+            margin-left: auto;
+            font-size: 1.2rem;
+        }
+
+        .basket-footer {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+        }
+
+        .basket-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background-color: #5a7d7c;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .checkout-btn:hover {
+            background-color: #496665;
+        }
+
+        .overlay-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 150;
+        }
+
+        .overlay-backdrop.active {
+            display: block;
+        }
+
+        .added-to-basket {
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #5a7d7c;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            transition: bottom 0.3s ease;
+            z-index: 100;
+        }
+
+        .added-to-basket.active {
+            bottom: 20px;
+        }
         
         /* Hero section */
         .hero {
@@ -153,6 +338,30 @@
         .product-description {
             margin-bottom: 1rem;
             color: #666;
+        }
+
+        .product-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-to-basket {
+            flex: 1;
+            background-color: #5a7d7c;
+            color: white;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .add-to-basket:hover {
+            background-color: #496665;
+        }
+
+        .view-details {
+            flex: 1;
         }
         
         /* About section */
@@ -313,10 +522,62 @@
             .hero h1 {
                 font-size: 2rem;
             }
+
+            .basket-overlay {
+                width: 100%;
+            }
+
+            .product-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Font Awesome Style (simplified version) */
+        .fa {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            font-weight: normal;
+            font-family: 'Arial';
+            text-rendering: auto;
+            line-height: 1;
+        }
+        .fa-shopping-basket:before {
+            content: "🛒";
+        }
+        .fa-times:before {
+            content: "✖";
+        }
+        .fa-trash:before {
+            content: "🗑️";
         }
     </style>
 </head>
 <body>
+    <!-- Shopping Basket Overlay -->
+    <div class="overlay-backdrop" id="basketBackdrop"></div>
+    <div class="basket-overlay" id="basketOverlay">
+        <div class="basket-header">
+            <h2>Your Basket</h2>
+            <div class="close-basket" id="closeBasket"><i class="fa fa-times"></i></div>
+        </div>
+        <div class="basket-items" id="basketItems">
+            <!-- Basket items will be added here dynamically -->
+        </div>
+        <div class="basket-footer">
+            <div class="basket-total">
+                <span>Total:</span>
+                <span id="basketTotal">£0.00</span>
+            </div>
+            <button class="checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Added to Basket Notification -->
+    <div class="added-to-basket" id="addedNotification">
+        Item added to basket!
+    </div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -328,6 +589,10 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
+                <div class="basket-icon" id="basketIcon">
+                    <i class="fa fa-shopping-basket"></i>
+                    <span class="basket-count" id="basketCount">0</span>
+                </div>
                 <div class="mobile-menu">
                     <span>Menu</span>
                 </div>
@@ -350,46 +615,58 @@
             <h2 class="section-title">Our Products</h2>
             <div class="products-grid">
                 <!-- Product 1 -->
-                <div class="product-card">
+                <div class="product-card" data-id="1" data-title="Handmade Ceramic Mug" data-price="24.99">
                     <div class="product-img">Product Image</div>
                     <div class="product-info">
                         <h3 class="product-title">Handmade Ceramic Mug</h3>
                         <p class="product-price">£24.99</p>
                         <p class="product-description">Beautifully crafted ceramic mug, perfect for your morning coffee.</p>
-                        <a href="#" class="btn">View Details</a>
+                        <div class="product-buttons">
+                            <button class="add-to-basket">Add to Basket</button>
+                            <a href="#" class="btn view-details">View Details</a>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 2 -->
-                <div class="product-card">
+                <div class="product-card" data-id="2" data-title="Woven Basket" data-price="32.50">
                     <div class="product-img">Product Image</div>
                     <div class="product-info">
                         <h3 class="product-title">Woven Basket</h3>
                         <p class="product-price">£32.50</p>
                         <p class="product-description">Hand-woven basket made from natural materials, ideal for storage.</p>
-                        <a href="#" class="btn">View Details</a>
+                        <div class="product-buttons">
+                            <button class="add-to-basket">Add to Basket</button>
+                            <a href="#" class="btn view-details">View Details</a>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 3 -->
-                <div class="product-card">
+                <div class="product-card" data-id="3" data-title="Knitted Throw Blanket" data-price="49.99">
                     <div class="product-img">Product Image</div>
                     <div class="product-info">
                         <h3 class="product-title">Knitted Throw Blanket</h3>
                         <p class="product-price">£49.99</p>
                         <p class="product-description">Soft and cozy hand-knitted throw blanket in natural wool.</p>
-                        <a href="#" class="btn">View Details</a>
+                        <div class="product-buttons">
+                            <button class="add-to-basket">Add to Basket</button>
+                            <a href="#" class="btn view-details">View Details</a>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 4 -->
-                <div class="product-card">
+                <div class="product-card" data-id="4" data-title="Scented Candle Set" data-price="18.99">
                     <div class="product-img">Product Image</div>
                     <div class="product-info">
                         <h3 class="product-title">Scented Candle Set</h3>
                         <p class="product-price">£18.99</p>
                         <p class="product-description">Set of three handmade scented candles in beautiful containers.</p>
-                        <a href="#" class="btn">View Details</a>
+                        <div class="product-buttons">
+                            <button class="add-to-basket">Add to Basket</button>
+                            <a href="#" class="btn view-details">View Details</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -471,8 +748,8 @@
     </footer>
 
     <script>
-        // Basic JavaScript for mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
             const mobileMenu = document.querySelector('.mobile-menu');
             const navMenu = document.querySelector('.nav-menu');
             
@@ -495,6 +772,158 @@
                     }
                 });
             });
+
+            // Shopping Basket Functionality
+            const basketIcon = document.getElementById('basketIcon');
+            const basketOverlay = document.getElementById('basketOverlay');
+            const closeBasket = document.getElementById('closeBasket');
+            const basketBackdrop = document.getElementById('basketBackdrop');
+            const basketItems = document.getElementById('basketItems');
+            const basketCount = document.getElementById('basketCount');
+            const basketTotal = document.getElementById('basketTotal');
+            const addToBasketButtons = document.querySelectorAll('.add-to-basket');
+            const addedNotification = document.getElementById('addedNotification');
+
+            // Basket data
+            let basket = [];
+
+            // Open basket overlay
+            basketIcon.addEventListener('click', function() {
+                basketOverlay.classList.add('active');
+                basketBackdrop.classList.add('active');
+            });
+
+            // Close basket overlay
+            closeBasket.addEventListener('click', closeBasketOverlay);
+            basketBackdrop.addEventListener('click', closeBasketOverlay);
+
+            function closeBasketOverlay() {
+                basketOverlay.classList.remove('active');
+                basketBackdrop.classList.remove('active');
+            }
+
+            // Add items to basket
+            addToBasketButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const productId = productCard.dataset.id;
+                    const productTitle = productCard.dataset.title;
+                    const productPrice = parseFloat(productCard.dataset.price);
+
+                    // Check if product already in basket
+                    const existingItem = basket.find(item => item.id === productId);
+
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        basket.push({
+                            id: productId,
+                            title: productTitle,
+                            price: productPrice,
+                            quantity: 1
+                        });
+                    }
+
+                    // Update basket UI
+                    updateBasketUI();
+                    
+                    // Show added notification
+                    showAddedNotification();
+                });
+            });
+
+            // Update basket UI
+            function updateBasketUI() {
+                // Update basket items
+                basketItems.innerHTML = '';
+                
+                if (basket.length === 0) {
+                    basketItems.innerHTML = '<p>Your basket is empty.</p>';
+                } else {
+                    basket.forEach(item => {
+                        const basketItem = document.createElement('div');
+                        basketItem.className = 'basket-item';
+                        basketItem.innerHTML = `
+                            <div class="basket-item-img">Image</div>
+                            <div class="basket-item-details">
+                                <h4 class="basket-item-title">${item.title}</h4>
+                                <p class="basket-item-price">£${item.price.toFixed(2)}</p>
+                                <div class="basket-item-quantity">
+                                    <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                                    <span class="quantity-value">${item.quantity}</span>
+                                    <button class="quantity-btn plus" data-id="${item.id}">+</button>
+                                </div>
+                            </div>
+                            <div class="remove-item" data-id="${item.id}"><i class="fa fa-trash"></i></div>
+                        `;
+                        basketItems.appendChild(basketItem);
+
+                        // Add event listeners to item controls
+                        const minusBtn = basketItem.querySelector('.minus');
+                        const plusBtn = basketItem.querySelector('.plus');
+                        const removeBtn = basketItem.querySelector('.remove-item');
+
+                        minusBtn.addEventListener('click', function() {
+                            decreaseQuantity(this.dataset.id);
+                        });
+
+                        plusBtn.addEventListener('click', function() {
+                            increaseQuantity(this.dataset.id);
+                        });
+
+                        removeBtn.addEventListener('click', function() {
+                            removeItem(this.dataset.id);
+                        });
+                    });
+                }
+
+                // Update basket count
+                const totalItems = basket.reduce((total, item) => total + item.quantity, 0);
+                basketCount.textContent = totalItems;
+
+                // Update basket total
+                const totalPrice = basket.reduce((total, item) => total + (item.price * item.quantity), 0);
+                basketTotal.textContent = `£${totalPrice.toFixed(2)}`;
+            }
+
+            // Increase item quantity
+            function increaseQuantity(id) {
+                const item = basket.find(item => item.id === id);
+                if (item) {
+                    item.quantity += 1;
+                    updateBasketUI();
+                }
+            }
+
+            // Decrease item quantity
+            function decreaseQuantity(id) {
+                const item = basket.find(item => item.id === id);
+                if (item) {
+                    item.quantity -= 1;
+                    if (item.quantity <= 0) {
+                        removeItem(id);
+                    } else {
+                        updateBasketUI();
+                    }
+                }
+            }
+
+            // Remove item from basket
+            function removeItem(id) {
+                basket = basket.filter(item => item.id !== id);
+                updateBasketUI();
+            }
+
+            // Show added notification
+            function showAddedNotification() {
+                addedNotification.classList.add('active');
+                setTimeout(() => {
+                    addedNotification.classList.remove('active');
+                }, 2000);
+            }
+
+            // Initialize basket UI
+            updateBasketUI();
         });
     </script>
 </body>
