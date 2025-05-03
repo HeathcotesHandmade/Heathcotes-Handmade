@@ -476,6 +476,94 @@
             resize: vertical;
         }
         
+        /* Checkout Styles */
+        .checkout-form {
+            padding: 1rem 0;
+        }
+        
+        .checkout-form h3 {
+            color: #5a7d7c;
+            margin-bottom: 1rem;
+        }
+        
+        .checkout-form hr {
+            margin: 1.5rem 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        
+        .order-summary {
+            margin-bottom: 1.5rem;
+        }
+        
+        .summary-items {
+            margin-bottom: 1rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #333;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .back-button {
+            display: block;
+            background: none;
+            border: none;
+            color: #5a7d7c;
+            text-decoration: underline;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+        
+        .order-confirmation {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .confirmation-icon {
+            font-size: 3rem;
+            color: #5a7d7c;
+            background-color: #e8f4f4;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .continue-shopping {
+            background-color: #5a7d7c;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 5px;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            cursor: pointer;
+        }
+        
         /* Footer */
         footer {
             background-color: #333333;
@@ -569,7 +657,7 @@
                 <span>Total:</span>
                 <span id="basketTotal">£0.00</span>
             </div>
-            <button class="checkout-btn">Proceed to Checkout</button>
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
         </div>
     </div>
 
@@ -783,6 +871,7 @@
             const basketTotal = document.getElementById('basketTotal');
             const addToBasketButtons = document.querySelectorAll('.add-to-basket');
             const addedNotification = document.getElementById('addedNotification');
+            const checkoutBtn = document.getElementById('checkoutBtn');
 
             // Basket data
             let basket = [];
@@ -922,6 +1011,196 @@
                 }, 2000);
             }
 
+            // Checkout button functionality
+            checkoutBtn.addEventListener('click', function() {
+                if (basket.length === 0) {
+                    alert('Your basket is empty. Please add items before checking out.');
+                    return;
+                }
+                
+                // Create checkout form and summary
+                const checkoutForm = createCheckoutForm();
+                
+                // Clear basket items container and replace with checkout form
+                basketItems.innerHTML = '';
+                basketItems.appendChild(checkoutForm);
+                
+                // Change checkout button to "Place Order"
+                checkoutBtn.textContent = 'Place Order';
+                
+                // Change behavior of checkout button to place order
+                checkoutBtn.removeEventListener('click', arguments.callee);
+                checkoutBtn.addEventListener('click', placeOrder);
+            });
+            
+            // Create checkout form
+            function createCheckoutForm() {
+                const form = document.createElement('div');
+                form.className = 'checkout-form';
+                
+                // Create order summary
+                const summary = document.createElement('div');
+                summary.className = 'order-summary';
+                summary.innerHTML = `
+                    <h3>Order Summary</h3>
+                    <div class="summary-items">
+                        ${basket.map(item => `
+                            <div class="summary-item">
+                                <span>${item.title} × ${item.quantity}</span>
+                                <span>£${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span>${basketTotal.textContent}</span>
+                    </div>
+                `;
+                
+                // Create shipping information form
+                const shippingForm = document.createElement('div');
+                shippingForm.className = 'shipping-info';
+                shippingForm.innerHTML = `
+                    <h3>Shipping Information</h3>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postcode">Postcode</label>
+                        <input type="text" id="postcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                `;
+                
+                // Create payment information form
+                const paymentForm = document.createElement('div');
+                paymentForm.className = 'payment-info';
+                paymentForm.innerHTML = `
+                    <h3>Payment Information</h3>
+                    <div class="form-group">
+                        <label for="cardName">Name on Card</label>
+                        <input type="text" id="cardName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry">Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" required>
+                        </div>
+                    </div>
+                `;
+                
+                // Add back button
+                const backButton = document.createElement('button');
+                backButton.className = 'back-button';
+                backButton.textContent = 'Back to Basket';
+                backButton.addEventListener('click', function() {
+                    updateBasketUI();
+                    checkoutBtn.textContent = 'Proceed to Checkout';
+                    
+                    // Reset checkout button event listener
+                    checkoutBtn.removeEventListener('click', placeOrder);
+                    checkoutBtn.addEventListener('click', function() {
+                        if (basket.length === 0) {
+                            alert('Your basket is empty. Please add items before checking out.');
+                            return;
+                        }
+                        
+                        const checkoutForm = createCheckoutForm();
+                        basketItems.innerHTML = '';
+                        basketItems.appendChild(checkoutForm);
+                        
+                        checkoutBtn.textContent = 'Place Order';
+                        checkoutBtn.removeEventListener('click', arguments.callee);
+                        checkoutBtn.addEventListener('click', placeOrder);
+                    });
+                });
+                
+                // Add all elements to form
+                form.appendChild(summary);
+                form.appendChild(document.createElement('hr'));
+                form.appendChild(shippingForm);
+                form.appendChild(document.createElement('hr'));
+                form.appendChild(paymentForm);
+                form.appendChild(backButton);
+                
+                return form;
+            }
+            
+            // Place order function
+            function placeOrder() {
+                // Simple validation
+                const requiredFields = document.querySelectorAll('.checkout-form input[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.style.borderColor = 'red';
+                        isValid = false;
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+                
+                // Show order confirmation
+                basketItems.innerHTML = `
+                    <div class="order-confirmation">
+                        <div class="confirmation-icon">✓</div>
+                        <h2>Thank You for Your Order!</h2>
+                        <p>Your order has been placed successfully.</p>
+                        <p>Order number: HH-${Math.floor(100000 + Math.random() * 900000)}</p>
+                        <p>A confirmation email has been sent to your email address.</p>
+                        <button class="continue-shopping">Continue Shopping</button>
+                    </div>
+                `;
+                
+                // Hide checkout button
+                checkoutBtn.style.display = 'none';
+                
+                // Add event listener to continue shopping button
+                const continueShoppingBtn = document.querySelector('.continue-shopping');
+                continueShoppingBtn.addEventListener('click', function() {
+                    // Clear the basket
+                    basket = [];
+                    updateBasketUI();
+                    
+                    // Reset checkout button
+                    checkoutBtn.textContent = 'Proceed to Checkout';
+                    checkoutBtn.style.display = 'block';
+                    
+                    // Close basket overlay
+                    closeBasketOverlay();
+                });
+            }
+            
             // Initialize basket UI
             updateBasketUI();
         });
